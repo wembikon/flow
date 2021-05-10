@@ -69,3 +69,20 @@ TEST(flow_test, error_at_the_end) {
   EXPECT_EQ(a.check(), "ok1ok2error2");
   EXPECT_EQ(ec, std::errc::invalid_argument);
 }
+
+TEST(flow_test, exception_handling) {
+  A a;
+  const auto potential_exception = [] { throw std::exception(); };
+  const auto ec = yano::Flow(a.ok1()) | [&] {
+    try {
+      potential_exception();
+    } catch (...) {
+      return std::make_error_code(std::errc::io_error);  // dummy error code just for testing.
+    }
+    return std::make_error_code(std::errc::invalid_argument);  // different dummy error code.
+  } | [&] {
+    return a.error2();
+  } | std::error_code();
+  EXPECT_EQ(a.check(), "ok1");
+  EXPECT_EQ(ec, std::errc::io_error);
+}
