@@ -1,3 +1,4 @@
+message(STATUS "Building flow UNIT TESTS")
 enable_testing()
 
 FetchContent_GetProperties(googletest)
