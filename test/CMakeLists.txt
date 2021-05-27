@@ -1,11 +1,9 @@
 enable_testing()
 
-# specifying an out-of-tree source a binary directory must be explicitly specified
-add_subdirectory(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../thirdparty/googletest
-  googletest
-  EXCLUDE_FROM_ALL
-)
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_MakeAvailable(googletest)
+endif()
 
 add_executable(flow_test
   ${CMAKE_CURRENT_SOURCE_DIR}/flow_test.cpp
